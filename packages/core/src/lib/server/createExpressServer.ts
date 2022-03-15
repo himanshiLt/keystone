@@ -91,18 +91,25 @@ export const createExpressServer = async (
     config.server?.extendExpressApp(expressServer, createRequestContext);
   }
 
-  if (config.files) {
-    expressServer.use(
-      '/files',
-      express.static(config.files.local?.storagePath ?? DEFAULT_FILES_STORAGE_PATH)
-    );
-  }
-
-  if (config.images) {
-    expressServer.use(
-      '/images',
-      express.static(config.images.local?.storagePath ?? DEFAULT_IMAGES_STORAGE_PATH)
-    );
+  if (config.storage) {
+    Object.entries(config.storage).forEach(([, val]) => {
+      if (val.kind === 'local') {
+        switch (val.type) {
+          case 'image': {
+            expressServer.use(
+              '/files',
+              express.static(val.storagePath || DEFAULT_FILES_STORAGE_PATH)
+            );
+          }
+          case 'image': {
+            expressServer.use(
+              '/images',
+              express.static(val.storagePath || DEFAULT_IMAGES_STORAGE_PATH)
+            );
+          }
+        }
+      }
+    });
   }
 
   const apolloServer = await addApolloServer({
