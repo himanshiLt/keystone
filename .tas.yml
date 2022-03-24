@@ -1,0 +1,17 @@
+---
+framework: jest
+preRun:
+  command:
+    - yarn
+    - node ./node_modules/playwright/install.js
+postMerge:
+  env:
+      DISABLE_LOGGING: true
+      NODE_ENV: test
+      DATABASE_URL: file:./test.db
+  pattern:
+    - "tests/admin-ui-tests/*.test.ts"
+postRun:
+  command:
+    - node --version
+version: 1.0.1
